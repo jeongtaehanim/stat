@@ -1,0 +1,26 @@
+[versions]
+kotlin = "2.3.0"
+dokka = "1.9.20"
+publish = "0.33.0"
+paper = "1.21.11-R0.1-SNAPSHOT"
+paperweight = "1.7.7"
+serialization = "2.3.0"
+serializationLib = "1.10.0"
+ksp = "2.3.5"
+autoServiceAnnotations = "1.1.1"
+autoServiceKsp = "1.2.0"
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[libraries]
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+serializationJson = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationLib" }
+serializationProtobuf = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-protobuf", version.ref = "serializationLib" }
+autoServiceAnnotations = { group = "com.google.auto.service", name = "auto-service-annotations", version.ref = "autoServiceAnnotations" }
+autoServiceKsp = { group = "dev.zacsweers.autoservice", name = "auto-service-ksp", version.ref = "autoServiceKsp" }
