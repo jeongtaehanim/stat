@@ -1,4 +1,4 @@
-package io.github.jeongtaehanim.stat.utli.data
+package io.github.jeongtaehanim.stat.util.data
 
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataType

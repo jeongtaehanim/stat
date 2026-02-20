@@ -77,28 +77,6 @@ listOf(projectApi, projectCore).forEach { module ->
     }
 }
 
-tasks {
-    register<DefaultTask>("setupModules") {
-        doLast {
-            val defaultPrefix = "region"
-            val projectPrefix = rootProject.name
-
-            if (defaultPrefix != projectPrefix) {
-                fun rename(suffix: String) {
-                    val from = "$defaultPrefix-$suffix"
-                    val to = "$projectPrefix-$suffix"
-                    file(from).takeIf { it.exists() }?.renameTo(file(to))
-                }
-
-                rename("api")
-                rename("core")
-                rename("plugin")
-                rename("publish")
-            }
-        }
-    }
-}
-
 idea {
     module {
         excludeDirs.add(file(".server"))

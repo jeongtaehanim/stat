@@ -1,4 +1,4 @@
-package io.github.jeongtaehanim.stat.utli.data
+package io.github.jeongtaehanim.stat.util.data
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
@@ -69,7 +69,7 @@ value class PersistentDataSupport(val container: PersistentDataContainer) {
             val pdt: PersistentDataType<*, *>? = when (type) {
                 java.lang.Byte::class.java, Byte::class.javaPrimitiveType -> PersistentDataType.BYTE
                 java.lang.Short::class.java, Short::class.javaPrimitiveType -> PersistentDataType.SHORT
-                java.lang.Integer::class.java, Int::class.javaPrimitiveType -> PersistentDataType.INTEGER
+                Integer::class.java, Int::class.javaPrimitiveType -> PersistentDataType.INTEGER
                 java.lang.Long::class.java, Long::class.javaPrimitiveType -> PersistentDataType.LONG
                 java.lang.Float::class.java, Float::class.javaPrimitiveType -> PersistentDataType.FLOAT
                 java.lang.Double::class.java, Double::class.javaPrimitiveType -> PersistentDataType.DOUBLE

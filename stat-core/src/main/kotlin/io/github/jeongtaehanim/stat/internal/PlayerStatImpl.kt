@@ -2,9 +2,9 @@ package io.github.jeongtaehanim.stat.internal
 
 import io.github.jeongtaehanim.stat.PlayerStat
 import io.github.jeongtaehanim.stat.StatConfig
-import io.github.jeongtaehanim.stat.utli.data.PersistentDataKey
-import io.github.jeongtaehanim.stat.utli.data.PersistentDataKeychain
-import io.github.jeongtaehanim.stat.utli.data.persistentData
+import io.github.jeongtaehanim.stat.util.data.PersistentDataKey
+import io.github.jeongtaehanim.stat.util.data.PersistentDataKeychain
+import io.github.jeongtaehanim.stat.util.data.persistentData
 import org.bukkit.entity.Player
 
 object StatKeys : PersistentDataKeychain() {

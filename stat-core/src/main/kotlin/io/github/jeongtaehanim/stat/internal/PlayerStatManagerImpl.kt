@@ -2,11 +2,8 @@ package io.github.jeongtaehanim.stat.internal
 
 import io.github.jeongtaehanim.stat.PlayerStat
 import io.github.jeongtaehanim.stat.PlayerStatManager
-import io.github.jeongtaehanim.stat.StatConfig
-import io.github.jeongtaehanim.stat.utli.data.persistentData
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.bukkit.persistence.PersistentDataType
 import java.util.UUID
 
 class PlayerStatManagerImpl private constructor(private val server: StatServerImpl, private val uniqueId: UUID): PlayerStatManager  {
