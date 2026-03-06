@@ -29,8 +29,8 @@ interface StatServer {
     )
     fun register(config: StatConfig, listener: StatEventListener)
     fun register(listener: StatEventListener)
-    fun register(listener: Class<out StatEventListener>)
-    fun register(listener: Class<out StatEventListener>, config: StatConfig)
+    fun register(listener: (StatServer) -> StatEventListener)
+    fun register(config: StatConfig, listener: (StatServer, StatConfig) -> StatEventListener)
     fun register()
 
     fun unregister(config: StatConfig)

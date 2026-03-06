@@ -84,18 +84,11 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
         plugin.server.pluginManager.registerEvents(listener, plugin)
         listeners[config.name] = listener
     }
-    override fun register(listener: Class<out StatEventListener>) {
-        val l = listener
-            .getConstructor(StatServer::class.java)
-            .newInstance(plugin)
-        register(l)
+    override fun register(listener: (StatServer) -> StatEventListener) {
+        register(listener(this))
     }
-
-    override fun register(listener: Class<out StatEventListener>, config: StatConfig) {
-        val l = listener
-            .getConstructor(StatServer::class.java)
-            .newInstance(plugin, config)
-        register(l)
+    override fun register(config: StatConfig, listener: (StatServer, StatConfig) -> StatEventListener) {
+        register(listener(this, config))
     }
     override fun register() {
         if (!plugin.dataFolder.exists()) {
