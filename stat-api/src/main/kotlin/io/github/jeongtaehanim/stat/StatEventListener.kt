@@ -3,9 +3,9 @@ package io.github.jeongtaehanim.stat
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 
-open class StatEventListener<out T : StatConfig>(
-    private val server: StatServer,
-    val config: T
+open class StatEventListener(
+    protected val server: StatServer,
+    val config: StatConfig
 ) : Listener {
     fun player(player: Player): PlayerStatManager = server.player(player)
 

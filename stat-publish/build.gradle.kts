@@ -34,6 +34,7 @@ publishing {
 
 mavenPublishing {
     pom {
+        name.set("Minecraft Stat")
         description.set("Team, Palimp.")
         url.set("https://github.com/jeongtaehanim/${rootProject.name}")
 
@@ -47,7 +48,7 @@ mavenPublishing {
         developers {
             developer {
                 id.set("jeongtaehanim")
-                name.set("정태한")
+                name.set("jeongtaehan")
                 email.set("jeongtaehanim@gmail.com")
                 url.set("https://github.com/jeongtaehanim")
                 roles.addAll("developer")
@@ -67,6 +68,10 @@ mavenPublishing {
 
 signing {
     isRequired = true
+    useInMemoryPgpKeys(
+        providers.gradleProperty("signingKey").orNull,
+        providers.gradleProperty("signingPassword").orNull
+    )
     sign(publishing.publications)
 }
 

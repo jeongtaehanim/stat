@@ -15,10 +15,10 @@ class PlayerStatImpl private constructor(private val player: Player, private val
     private val key = StatKeys.key(config.name)
 
     companion object {
-        fun create(player: Player, config: StatConfig): PlayerStat = PlayerStatImpl(player, config)
+        fun create(player: Player, config: StatConfig): PlayerStatImpl = PlayerStatImpl(player, config)
     }
 
-    override var value: Long = player.persistentData[key] ?: config.base
+    override var value: Long = player.persistentData[key] ?: config.rollBase()
 
     override operator fun plusAssign(amount: Long) { value += amount * config.potential }
     override operator fun minusAssign(amount: Long) { value -= amount * config.potential }

@@ -10,22 +10,34 @@ interface StatServer {
 
     val configs: Map<String, StatConfig>
 
-    fun player(player: Player): PlayerStatManager
+    val actionBarBuffer: StatActionBarBuffer
+
     fun player(uniqueId: UUID): PlayerStatManager
+    fun player(player: Player): PlayerStatManager
     fun player(name: String): PlayerStatManager
 
     fun save()
 
-    fun invalidate(player: Player)
     fun invalidate(uniqueId: UUID)
+    fun invalidate(player: Player)
     fun invalidate(name: String)
     fun invalidate()
 
-    fun register(config: StatConfig, listener: StatEventListener<StatConfig>)
+    @Deprecated(
+        message = "Use register(listener: StatEventListener)",
+        replaceWith = ReplaceWith("register(listener)")
+    )
+    fun register(config: StatConfig, listener: StatEventListener)
+    fun register(listener: StatEventListener)
+    fun register(listener: Class<out StatEventListener>)
+    fun register(listener: Class<out StatEventListener>, config: StatConfig)
     fun register()
 
     fun unregister(config: StatConfig)
     fun unregister()
+
+    fun enable()
+    fun disable()
 }
 
 interface StatServerInternal {

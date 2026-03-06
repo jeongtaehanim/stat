@@ -19,7 +19,7 @@ class PlayerStatManagerImpl private constructor(private val server: StatServerIm
         fun create(server: StatServerImpl, uniqueId: UUID): PlayerStatManagerImpl = PlayerStatManagerImpl(server, uniqueId)
     }
 
-    private val caches: MutableMap<String, PlayerStat> = HashMap()
+    private val caches: MutableMap<String, PlayerStatImpl> = HashMap()
 
     init {
         server.configs.forEach { (_, config) ->
@@ -30,7 +30,7 @@ class PlayerStatManagerImpl private constructor(private val server: StatServerIm
     override fun stat(name: String): PlayerStat {
         caches[name]?.let { return it }
         server.configs[name]?.let { config ->
-            val stat: PlayerStat = PlayerStatImpl.create(player, config)
+            val stat = PlayerStatImpl.create(player, config)
             caches[config.name] = stat
             return stat
         }

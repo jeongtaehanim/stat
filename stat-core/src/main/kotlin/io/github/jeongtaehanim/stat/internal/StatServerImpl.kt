@@ -1,11 +1,6 @@
 package io.github.jeongtaehanim.stat.internal
 
-import io.github.jeongtaehanim.stat.PlayerStatManager
-import io.github.jeongtaehanim.stat.StatConfig
-import io.github.jeongtaehanim.stat.StatEventListener
-import io.github.jeongtaehanim.stat.StatModule
-import io.github.jeongtaehanim.stat.StatServer
-import io.papermc.paper.plugin.loader.PluginLoader
+import io.github.jeongtaehanim.stat.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -17,28 +12,25 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.File
 import java.net.URLClassLoader
-import java.util.ServiceLoader
-import java.util.UUID
+import java.util.*
 
 class StatServerImpl(private val plugin: JavaPlugin): StatServer {
+    override val actionBarBuffer: StatActionBarBuffer = StatActionBarBufferImpl(plugin, flushEveryTicks = 10L, maxHoldTicks = 40L)
+
     override val configs: Map<String, StatConfig>
         get() = _configs
 
     private val _configs: MutableMap<String, StatConfig> = HashMap()
-    private val caches: MutableMap<UUID, PlayerStatManager> = HashMap()
-    private val listeners: MutableMap<String, StatEventListener<StatConfig>> = HashMap()
+    private val caches: MutableMap<UUID, PlayerStatManagerImpl> = HashMap()
+    private val listeners: MutableMap<String, StatEventListener> = HashMap()
+
+    private val l: Listener = StatListener(this)
 
     init {
         Bukkit.getScheduler().runTaskTimer(plugin, Runnable { heartbeat() }, 0L, 20L * 60L * 5L)
-        Bukkit.getPluginManager().registerEvents(StatSnapshotListener(this), plugin)
     }
-
     private fun heartbeat() { save() }
 
-    override fun player(player: Player): PlayerStatManager {
-        caches[player.uniqueId]?.let { return it }
-        return create(player)
-    }
     override fun player(uniqueId: UUID): PlayerStatManager {
         caches[uniqueId]?.let { return it }
         Bukkit.getPlayer(uniqueId)?.let { player ->
@@ -46,6 +38,10 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
         }
 
         throw Error("존재하지 않는 플레이어")
+    }
+    override fun player(player: Player): PlayerStatManager {
+        caches[player.uniqueId]?.let { return it }
+        return create(player)
     }
     override fun player(name: String): PlayerStatManager {
         Bukkit.getPlayer(name)?.let { player ->
@@ -63,8 +59,8 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
 
     override fun save() { caches.forEach { (_, manager) -> manager.save() } }
 
-    override fun invalidate(player: Player) { invalidate(player.uniqueId) }
     override fun invalidate(uniqueId: UUID) { caches.remove(uniqueId) }
+    override fun invalidate(player: Player) { invalidate(player.uniqueId) }
     override fun invalidate(name: String) {
         Bukkit.getPlayer(name)?.let { player ->
             invalidate(player.uniqueId)
@@ -72,12 +68,34 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
     }
     override fun invalidate() { caches.clear() }
 
-    override fun register(config: StatConfig, listener: StatEventListener<StatConfig>) {
+    @Deprecated("Use register(listener: StatEventListener)", replaceWith = ReplaceWith("register(listener)"))
+    override fun register(config: StatConfig, listener: StatEventListener) {
         require(_configs[config.name] == null) { "Exist Stat" }
         _configs[config.name] = config
 
-        Bukkit.getPluginManager().registerEvents(listener, plugin)
+        plugin.server.pluginManager.registerEvents(listener, plugin)
         listeners[config.name] = listener
+    }
+    override fun register(listener: StatEventListener) {
+        val config = listener.config
+        require(_configs[config.name] == null) { "Exist Stat" }
+        _configs[config.name] = config
+
+        plugin.server.pluginManager.registerEvents(listener, plugin)
+        listeners[config.name] = listener
+    }
+    override fun register(listener: Class<out StatEventListener>) {
+        val l = listener
+            .getConstructor(StatServer::class.java)
+            .newInstance(plugin)
+        register(l)
+    }
+
+    override fun register(listener: Class<out StatEventListener>, config: StatConfig) {
+        val l = listener
+            .getConstructor(StatServer::class.java)
+            .newInstance(plugin, config)
+        register(l)
     }
     override fun register() {
         if (!plugin.dataFolder.exists()) {
@@ -89,19 +107,18 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
 
         for (jar in jars) {
             try {
-                val cl = URLClassLoader(arrayOf(jar.toURI().toURL()), plugin.javaClass.classLoader)
-
-                val modules = ServiceLoader.load(StatModule::class.java, cl).toList()
-                if (modules.isEmpty()) {
-                    plugin.logger.warning("No StatModule in ${jar.name}")
-                    continue
+                URLClassLoader(arrayOf(jar.toURI().toURL()), plugin.javaClass.classLoader).use { cl ->
+                    val modules = ServiceLoader.load(StatModule::class.java, cl).toList()
+                    if (modules.isEmpty()) {
+                        plugin.logger.warning("No StatModule in ${jar.name}")
+                    } else {
+                        for (module in modules) {
+                            runCatching { module.register(this) }
+                                .onFailure { t -> plugin.logger.severe("Module register failed in ${jar.name}: ${t.message}") }
+                        }
+                        plugin.logger.info("Loaded ${modules.size} module(s) from ${jar.name}")
+                    }
                 }
-
-                for (module in modules) {
-                    module.register(this)
-                }
-
-                plugin.logger.info("Loaded ${modules.size} module(s) from ${jar.name}")
             } catch (t: Throwable) {
                 plugin.logger.severe("Failed to load ${jar.name}: ${t.message}")
                 t.printStackTrace()
@@ -119,9 +136,23 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
         listeners.values.forEach { listener -> HandlerList.unregisterAll(listener) }
         listeners.clear()
     }
+
+    override fun enable() {
+        disable()
+        listeners.values.forEach { listener ->
+            plugin.server.pluginManager.registerEvents(listener, plugin)
+        }
+        actionBarBuffer.start()
+    }
+    override fun disable() {
+        listeners.values.forEach { listener -> HandlerList.unregisterAll(listener) }
+        HandlerList.unregisterAll(l)
+        actionBarBuffer.stop(flush = true)
+        save()
+    }
 }
 
-class StatSnapshotListener(private val server: StatServerImpl): Listener {
+class StatListener(private val server: StatServerImpl): Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) { server.player(event.player) }
     @EventHandler

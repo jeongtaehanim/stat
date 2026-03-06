@@ -5,7 +5,5 @@ import io.github.jeongtaehanim.stat.StatServerInternal
 import org.bukkit.plugin.java.JavaPlugin
 
 class StatServerInternalImpl: StatServerInternal {
-    override fun create(plugin: JavaPlugin): StatServer {
-        return StatServerImpl(plugin)
-    }
+    override fun create(plugin: JavaPlugin): StatServer = StatServerImpl(plugin)
 }

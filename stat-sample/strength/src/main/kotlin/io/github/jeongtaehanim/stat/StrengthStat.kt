@@ -1,39 +1,32 @@
 package io.github.jeongtaehanim.stat
 
 import com.google.auto.service.AutoService
-import io.github.jeongtaehanim.stat.StatModule
-import io.github.jeongtaehanim.stat.StatServer
-import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerJoinEvent
 
 @AutoService(StatModule::class)
-class StrengthModule : StatModule<StrengthConfig> {
+class StrengthModule : StatModule {
+    override fun config(): StatConfig = StatConfig(
+        name = "strength",
+        transfer = "힘",
+        description = "Strength stat.",
+        base = 10L,
+        deviation = 5L,
+        potential = 2L
+    )
 
-    override fun config(): StrengthConfig = StrengthConfig()
-
-    override fun listener(server: StatServer, config: StrengthConfig) =
+    override fun listener(server: StatServer, config: StatConfig) =
         StrengthListener(server, config)
-}
-
-class StrengthConfig : StatConfig() {
-    override val name: String = "strength"
-    override val transfer: String = "힘"
-    override val description: String = "Strength stat."
-
-    override val base: Long = 10L
-    override val deviation: Long = 5L
-    override val potential: Long = 2L
 }
 
 class StrengthListener(
     server: StatServer,
-    config: StrengthConfig
-) : StatEventListener<StrengthConfig>(server, config) {
+    config: StatConfig
+) : StatEventListener(server, config) {
     @EventHandler
     fun onJoin(e: PlayerJoinEvent) {
-        Bukkit.getLogger().info("[Strength] Loaded stat='${config.name}' for ${e.player.name}")
+        org.bukkit.Bukkit.getLogger().info("[Strength] Loaded stat='${config.name}' for ${e.player.name}")
     }
 
     @EventHandler

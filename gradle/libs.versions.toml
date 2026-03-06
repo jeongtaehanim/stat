@@ -1,7 +1,7 @@
 [versions]
 kotlin = "2.3.0"
 dokka = "1.9.20"
-publish = "0.33.0"
+publish = "0.36.0"
 paper = "1.21.11-R0.1-SNAPSHOT"
 paperweight = "1.7.7"
 serialization = "2.3.0"
@@ -14,7 +14,6 @@ autoServiceKsp = "1.2.0"
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
-paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 

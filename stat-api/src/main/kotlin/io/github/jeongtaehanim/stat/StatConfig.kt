@@ -1,20 +1,17 @@
 package io.github.jeongtaehanim.stat
 
-import kotlin.random.Random
-
-open class StatConfig {
-    open val name: String = "default"
-    open val transfer: String = "기본"
-    open val description: String = "Sample Stat."
-
+data class StatConfig(
+    val name: String,
+    val transfer: String = "기본",
+    val description: String = "",
     // base = conf.{base +- random(deviation)}
-    open val base: Long = 0L
-        get() = field + Random.nextLong(-deviation, deviation + 1)
-
-    // once
-    open val deviation: Long = 100L
-
+    val base: Long = 0L,
+    val deviation: Long = 0L,
     // potential = conf.{random(potential)}
     // base += event.{action} * conf.{potential}
-    open val potential: Long = 1L
+    val potential: Long = 0L
+) {
+    fun rollBase(random: kotlin.random.Random = kotlin.random.Random): Long {
+        return base + random.nextLong(-deviation, deviation + 1)
+    }
 }
