@@ -18,7 +18,7 @@ extra.apply {
 
     configurations.findByName("implementation")?.allDependencies?.forEach { dependency ->
         val group = dependency.group ?: error("group is null")
-        var name = dependency.name ?: error("name is null")
+        var name = dependency.name
         var version = dependency.version
 
         if (dependency !is ProjectDependency) {
@@ -49,6 +49,7 @@ tasks {
         bundleTask: TaskProvider<org.gradle.jvm.tasks.Jar>? = null
     ) = register<Jar>("${classifier}Jar") {
         archiveBaseName.set(rootProject.name)
+        archiveVersion.set("")
         archiveClassifier.set(classifier)
 
         from(sourceSets["main"].output)
@@ -73,10 +74,7 @@ tasks {
             from(jar)
             into(plugins)
 
-
-            val stats = rootProject.file(".server/plugins-$classifier/Stat/stats")
             val statSample = rootProject.project(":stat-sample")
-
             val statJarTasks = statSample.subprojects.map { it.tasks.named("jar") }
             dependsOn(statJarTasks)
 
