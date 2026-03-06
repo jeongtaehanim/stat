@@ -15,7 +15,7 @@ import java.net.URLClassLoader
 import java.util.*
 
 class StatServerImpl(private val plugin: JavaPlugin): StatServer {
-    override val actionBarBuffer: StatActionBarBuffer = StatActionBarBufferImpl(plugin, flushEveryTicks = 10L, maxHoldTicks = 40L)
+    override val actionBarBuffer: StatActionBarBuffer = StatActionBarBufferImpl(plugin, flushEveryTicks = 2L, maxHoldTicks = 12L)
 
     override val configs: Map<String, StatConfig>
         get() = _configs
