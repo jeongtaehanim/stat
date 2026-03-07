@@ -12,7 +12,7 @@ class PlayerStatManagerImpl private constructor(private val server: StatServerIm
             Bukkit.getPlayer(uniqueId)?.let {
                 return it
             }
-            throw Error("Player not found")
+            throw Error("Unknown player")
         }
 
     companion object {

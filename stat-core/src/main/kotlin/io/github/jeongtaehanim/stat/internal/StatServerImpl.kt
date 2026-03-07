@@ -33,26 +33,21 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
 
     override fun player(uniqueId: UUID): PlayerStatManager {
         caches[uniqueId]?.let { return it }
-        Bukkit.getPlayer(uniqueId)?.let { player ->
-            return create(player)
-        }
-
-        throw Error("존재하지 않는 플레이어")
+        val player = Bukkit.getPlayer(uniqueId) ?: throw Error("Unknown player")
+        return create(player.uniqueId)
     }
     override fun player(player: Player): PlayerStatManager {
         caches[player.uniqueId]?.let { return it }
-        return create(player)
+        return create(player.uniqueId)
     }
     override fun player(name: String): PlayerStatManager {
-        Bukkit.getPlayer(name)?.let { player ->
-            return player(player)
-        }
-        throw Error("존재하지 않는 플레이어")
-    }
+        val player = Bukkit.getPlayer(name) ?: throw Error("Unknown player")
+        return player(player)
 
-    private fun create(player: Player): PlayerStatManager {
-        PlayerStatManagerImpl.create(this, player.uniqueId).let { manager ->
-            caches[player.uniqueId] = manager
+    }
+    private fun create(uniqueId: UUID): PlayerStatManager {
+        PlayerStatManagerImpl.create(this, uniqueId).let { manager ->
+            caches[uniqueId] = manager
             return manager
         }
     }
@@ -61,11 +56,7 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
 
     override fun invalidate(uniqueId: UUID) { caches.remove(uniqueId) }
     override fun invalidate(player: Player) { invalidate(player.uniqueId) }
-    override fun invalidate(name: String) {
-        Bukkit.getPlayer(name)?.let { player ->
-            invalidate(player.uniqueId)
-        }
-    }
+    override fun invalidate(name: String) { invalidate(Bukkit.getOfflinePlayer(name).uniqueId) }
     override fun invalidate() { caches.clear() }
 
     @Deprecated("Use register(listener: StatEventListener)", replaceWith = ReplaceWith("register(listener)"))
