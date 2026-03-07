@@ -28,6 +28,7 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
 
     init {
         Bukkit.getScheduler().runTaskTimer(plugin, Runnable { heartbeat() }, 0L, 20L * 60L * 5L)
+        enable()
     }
     private fun heartbeat() { save() }
 
