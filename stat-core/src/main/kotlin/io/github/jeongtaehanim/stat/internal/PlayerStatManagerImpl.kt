@@ -23,14 +23,14 @@ class PlayerStatManagerImpl private constructor(private val server: StatServerIm
 
     init {
         server.configs.forEach { (_, config) ->
-            caches[config.name] = PlayerStatImpl.create(player, config)
+            caches[config.name] = PlayerStatImpl.create(player.uniqueId, config)
         }
     }
 
     override fun stat(name: String): PlayerStat {
         caches[name]?.let { return it }
         server.configs[name]?.let { config ->
-            val stat = PlayerStatImpl.create(player, config)
+            val stat = PlayerStatImpl.create(player.uniqueId, config)
             caches[config.name] = stat
             return stat
         }

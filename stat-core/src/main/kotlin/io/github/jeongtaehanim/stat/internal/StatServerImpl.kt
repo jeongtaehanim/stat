@@ -55,10 +55,13 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
 
     override fun save() { caches.forEach { (_, manager) -> manager.save() } }
 
-    override fun invalidate(uniqueId: UUID) { caches.remove(uniqueId) }
+    override fun invalidate(uniqueId: UUID) { caches.remove(uniqueId)?.save() }
     override fun invalidate(player: Player) { invalidate(player.uniqueId) }
     override fun invalidate(name: String) { invalidate(Bukkit.getOfflinePlayer(name).uniqueId) }
-    override fun invalidate() { caches.clear() }
+    override fun invalidate() { 
+        caches.forEach { it.save() }
+        caches.clear() 
+    }
 
     @Deprecated("Use register(listener: StatEventListener)", replaceWith = ReplaceWith("register(listener)"))
     override fun register(config: StatConfig, listener: StatEventListener) {

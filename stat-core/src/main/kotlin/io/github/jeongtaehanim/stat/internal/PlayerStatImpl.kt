@@ -6,16 +6,25 @@ import io.github.jeongtaehanim.stat.util.data.PersistentDataKey
 import io.github.jeongtaehanim.stat.util.data.PersistentDataKeychain
 import io.github.jeongtaehanim.stat.util.data.persistentData
 import org.bukkit.entity.Player
+import java.util.UUID
 
 object StatKeys : PersistentDataKeychain() {
     fun key(name: String): PersistentDataKey<Long, Long> = primitive<Long>("stat_${name.lowercase()}")
 }
 
-class PlayerStatImpl private constructor(private val player: Player, private val config: StatConfig): PlayerStat {
+class PlayerStatImpl private constructor(private val uniqueId: UUID, private val config: StatConfig): PlayerStat {
+    private val player: Player
+        get() {
+            Bukkit.getPlayer(uniqueId)?.let {
+                return it
+            }
+            throw Error("Unknown player")
+        }
+
     private val key = StatKeys.key(config.name)
 
     companion object {
-        fun create(player: Player, config: StatConfig): PlayerStatImpl = PlayerStatImpl(player, config)
+        fun create(uniqueId: UUID, config: StatConfig): PlayerStatImpl = PlayerStatImpl(uniqueId, config)
     }
 
     override var value: Long = player.persistentData[key] ?: config.rollBase()
