@@ -5,6 +5,7 @@ import io.github.jeongtaehanim.stat.StatConfig
 import io.github.jeongtaehanim.stat.util.data.PersistentDataKey
 import io.github.jeongtaehanim.stat.util.data.PersistentDataKeychain
 import io.github.jeongtaehanim.stat.util.data.persistentData
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.UUID
 

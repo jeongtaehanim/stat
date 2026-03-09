@@ -59,7 +59,7 @@ class StatServerImpl(private val plugin: JavaPlugin): StatServer {
     override fun invalidate(player: Player) { invalidate(player.uniqueId) }
     override fun invalidate(name: String) { invalidate(Bukkit.getOfflinePlayer(name).uniqueId) }
     override fun invalidate() { 
-        caches.forEach { it.save() }
+        caches.values.forEach { it.save() }
         caches.clear() 
     }
 
